@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dunes International School — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dune-navy:#5C1A1E;
+    --sand:#F5EFE4;
+    --ochre:#B8935A;
+    --card:#FFFFFF;
+    --ink:#2A211D;
+    --ink-soft:#6B5F55;
+    --line:#E3D8C4;
+    --green:#4C7A5E;
+    --rose:#8A3B36;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--sand);
+    background-image:url('https://ict.dunesinternationalschool.com/container/resources/gif/logos/DUNES/dc_login_bg.jpg');
+    background-size:cover;
+    background-position:center;
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .login-card{
+    background:var(--card);
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+    width:100%;
+    max-width:420px;
+    padding:40px 36px;
+    text-align:center;
+  }
+  .logo{margin-bottom:24px;}
+  .logo-mark{
+    width:56px;height:56px;
+    border-radius:12px;
+    background:linear-gradient(155deg,var(--ochre),#8f6c3a);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:600;font-size:24px;
+    color:#2A1B08;margin-bottom:12px;
+  }
+  .school-name{
+    font-family:'Fraunces',serif;font-size:18px;font-weight:600;
+    color:var(--dune-navy);margin-bottom:4px;
+  }
+  .school-sub{font-size:12px;color:var(--ink-soft);margin-bottom:28px;}
+  .form-group{margin-bottom:16px;text-align:left;}
+  .form-group label{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:6px;display:block;}
+  .form-group input{
+    width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:8px;
+    font-size:14px;font-family:inherit;transition:border .2s;
+    background:var(--sand);
+  }
+  .form-group input:focus{outline:none;border-color:var(--ochre);background:#fff;}
+  .btn-login{
+    width:100%;padding:13px;border:none;border-radius:8px;
+    background:var(--dune-navy);color:#fff;font-size:14px;font-weight:600;
+    font-family:inherit;cursor:pointer;margin-top:8px;transition:background .2s;
+  }
+  .btn-login:hover{background:#7A2429;}
+  .btn-login:disabled{opacity:.6;cursor:not-allowed;}
+  .error-msg{
+    background:var(--rose);color:#fff;padding:10px 14px;border-radius:8px;
+    font-size:13px;margin-bottom:16px;display:none;
+  }
+  .error-msg.show{display:block;}
+  .footer-link{margin-top:20px;font-size:12px;color:var(--ink-soft);}
+  .footer-link a{color:var(--ochre);text-decoration:none;font-weight:500;}
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <div class="logo">
+    <div class="logo-mark">D</div>
+    <div class="school-name">Dunes International School</div>
+    <div class="school-sub">Student Portal Login</div>
+  </div>
+
+  <div class="error-msg" id="error-msg"></div>
+
+  <form id="loginForm" method="post" action="/DUNES/authenticate.do" enctype="multipart/form-data;charset=UTF-8">
+    <input type="hidden" name="dbConnVar" value="DUNES">
+    <input type="hidden" name="hiddenfield" value="">
+    <input type="hidden" id="service_id" name="service_id">
+
+    <div class="form-group">
+      <label for="loginid">Username</label>
+      <input type="text" id="loginid" name="loginid" autocomplete="username" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+    </div>
+
+    <button type="submit" class="btn-login" id="btn-login">Sign In</button>
+  </form>
+
+  <div class="footer-link">
+    <a href="https://ict.dunesinternationalschool.com/" target="_blank">Open full Digital Campus</a>
+  </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('btn-login');
+  var err = document.getElementById('error-msg');
+  var loginid = document.getElementById('loginid').value.trim();
+  var password = document.getElementById('password').value;
+
+  if (!loginid || !password) {
+    err.textContent = 'Please enter both username and password.';
+    err.className = 'error-msg show';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+  err.className = 'error-msg';
+
+  var formData = new URLSearchParams();
+  formData.append('loginid', loginid);
+  formData.append('password', password);
+
+  fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  })
+  .then(function(response) { return response.json(); })
+  .then(function(result) {
+    if (result.ok) {
+      window.location.href = '/';
+    } else {
+      err.textContent = result.error || 'Login failed. Please try again.';
+      err.className = 'error-msg show';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  })
+  .catch(function(e) {
+    err.textContent = 'Connection error. Please try again.';
+    err.className = 'error-msg show';
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  });
+});
+</script>
+
+</body>
+</html>

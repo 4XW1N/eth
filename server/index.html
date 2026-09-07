@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dunes International School — Student Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dune-navy:#5C1A1E;
+    --dune-navy-light:#7A2429;
+    --sand:#F5EFE4;
+    --sand-deep:#E9DFCB;
+    --card:#FFFFFF;
+    --ochre:#B8935A;
+    --ochre-soft:#F0E4CE;
+    --green:#4C7A5E;
+    --green-soft:#E1EEE5;
+    --rose:#8A3B36;
+    --rose-soft:#F1E0DD;
+    --ink:#2A211D;
+    --ink-soft:#6B5F55;
+    --line:#E3D8C4;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--sand);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  .app{
+    display:grid;
+    grid-template-columns:248px 1fr;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  .sidebar{
+    background:var(--dune-navy);
+    color:#F3E9DC;
+    padding:28px 22px;
+    display:flex;
+    flex-direction:column;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:38px;
+  }
+  .brand-mark{
+    width:34px;height:34px;
+    border-radius:8px;
+    background:linear-gradient(155deg,var(--ochre),#8f6c3a);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    color:#2A1B08;
+    font-size:16px;
+    flex-shrink:0;
+  }
+  .brand-text{line-height:1.15;}
+  .brand-text .school{font-size:14.5px;font-weight:600;color:#fff;}
+  .brand-text .tag{font-size:11px;color:#D8B9A8;letter-spacing:.02em;}
+
+  .navlist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:3px;}
+  .navlist li{
+    padding:10px 12px;
+    border-radius:9px;
+    font-size:14px;
+    color:#E4D2C3;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    transition:background .15s ease, color .15s ease;
+  }
+  .navlist li svg{opacity:.85;flex-shrink:0;}
+  .navlist li:hover{background:#7A2429;color:#fff;}
+  .navlist li.active{background:var(--ochre);color:#2A1B08;font-weight:600;}
+  .navlist li.active svg{opacity:1;stroke:#2A1B08;}
+
+  .sidebar-foot{
+    margin-top:auto;
+    padding-top:18px;
+    border-top:1px solid #7A2429;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--ochre-soft);
+    color:#5b3f10;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;font-size:13px;
+    flex-shrink:0;
+  }
+  .sidebar-foot .who{line-height:1.2;}
+  .sidebar-foot .name{font-size:13px;color:#fff;font-weight:500;}
+  .sidebar-foot .role{font-size:11.5px;color:#C9A692;}
+
+  .bottom-dock{
+    display:none;
+    position:fixed;
+    left:0;right:0;bottom:0;
+    justify-content:center;
+    padding:0 14px calc(14px + env(safe-area-inset-bottom));
+    z-index:9999;
+    background:transparent;
+  }
+  .bottom-dock-inner{
+    display:flex;
+    gap:4px;
+    background:var(--dune-navy);
+    border-radius:22px;
+    padding:9px 8px;
+    box-shadow:0 14px 30px -10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+    width:100%;
+    max-width:460px;
+  }
+  .bd-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    padding:8px 2px 7px;
+    border-radius:14px;
+    color:#D8B9A8;
+    transition:background .15s ease, color .15s ease, transform .15s ease;
+  }
+  .bd-item span{font-size:10px;font-weight:500;}
+  .bd-item.active{
+    background:var(--ochre);
+    color:#2A1B08;
+    transform:translateY(-6px);
+    box-shadow:0 8px 16px -6px rgba(0,0,0,.4);
+  }
+
+  .mobile-nav{
+    display:none;
+    background:var(--dune-navy);
+    color:#fff;
+    padding:16px 18px;
+    align-items:center;
+    gap:10px;
+    justify-content:space-between;
+  }
+  .mobile-nav .brand{margin:0;}
+
+  @media (max-width:880px){
+    .app{display:block;}
+    .sidebar{display:none;}
+    .mobile-nav{display:flex;}
+    .bottom-dock{display:flex;}
+    main{padding-bottom:104px;}
+  }
+
+  main{padding:34px 40px 60px;max-width:1180px;margin:0 auto;overflow-y:auto;height:100vh;}
+  @media (max-width:600px){ main{padding:22px 16px 48px;} }
+
+  .student-info{
+    display:flex;align-items:center;gap:16px;margin-bottom:24px;
+    padding:16px;background:var(--card);border-radius:12px;border:1px solid var(--line);
+  }
+  .student-avatar{
+    width:48px;height:48px;border-radius:50%;
+    background:var(--ochre-soft);display:flex;align-items:center;justify-content:center;
+    font-weight:600;color:#5b3f10;font-size:18px;flex-shrink:0;
+  }
+  .student-details h3{font-size:16px;color:var(--dune-navy);margin:0 0 4px;}
+  .student-details p{font-size:13px;color:var(--ink-soft);margin:0;}
+  .logout-btn{
+    margin-left:auto;padding:8px 16px;border:1px solid var(--line);
+    border-radius:8px;background:var(--card);color:var(--ink-soft);
+    font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;
+  }
+  .logout-btn:hover{background:var(--rose);color:#fff;border-color:var(--rose);}
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 22px 20px;
+    margin-bottom:20px;
+  }
+  .panel h2{font-size:16.5px;margin:0 0 3px;color:var(--dune-navy);}
+  .panel .panel-sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;}
+  .panel-head{
+    display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;
+  }
+  .link-btn{
+    font-size:12.5px;color:var(--ochre);font-weight:600;
+    background:none;border:none;cursor:pointer;padding:0;
+  }
+
+  .announce{padding:13px 0;border-top:1px solid var(--line);}
+  .announce:first-of-type{border-top:none;}
+  .announce .a-tag{
+    font-size:10.5px;font-weight:700;color:var(--ochre);margin-bottom:4px;display:block;
+  }
+  .announce .a-txt{font-size:13.5px;line-height:1.5;color:var(--ink);}
+  .announce .a-date{font-size:11.5px;color:var(--ink-soft);margin-top:5px;}
+
+  .circ-card{padding:14px 2px;border-top:1px solid var(--line);cursor:pointer;}
+  .circ-card:first-of-type{border-top:none;}
+  .circ-card .c-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .circ-card .c-title{font-size:13.5px;line-height:1.45;color:var(--ink);font-weight:600;}
+  .circ-card .c-meta{font-size:11px;color:var(--ink-soft);margin-top:5px;}
+  .circ-card .c-caret{color:var(--ochre);font-size:14px;line-height:1.2;flex-shrink:0;}
+  .circ-card .c-body{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);}
+  .circ-card.open .c-body{display:block;}
+  .circ-card .c-details{font-size:12.5px;line-height:1.6;color:var(--ink-soft);}
+  .circ-card .c-details p{margin:0 0 8px;}
+  .circ-card .c-files{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+  .c-file{
+    display:flex;align-items:center;gap:10px;
+    border:1px dashed var(--ochre);border-radius:8px;
+    padding:9px 12px;color:var(--dune-navy);text-decoration:none;
+    font-size:12.5px;font-weight:600;background:var(--ochre-soft);
+    transition:background .15s ease;
+  }
+  .c-file:hover{background:#ecdcbc;}
+  .c-file .f-ic{font-size:16px;}
+
+  .error-msg{
+    background:var(--rose);color:#fff;padding:10px 14px;border-radius:8px;
+    font-size:13px;margin-bottom:16px;display:none;
+  }
+  .error-msg.show{display:block;}
+
+  .portal-foot{
+    margin-top:34px;
+    padding:22px 0 0;
+    border-top:1px solid var(--line);
+    color:var(--ink-soft);
+    font-size:12.5px;
+  }
+  .portal-foot .school-line{
+    font-family:'Fraunces',serif;
+    font-size:13px;
+    color:var(--dune-navy);
+    font-weight:600;
+    margin-bottom:3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">D</div>
+      <div class="brand-text">
+        <div class="school">Dunes International</div>
+        <div class="tag">Student Portal</div>
+      </div>
+    </div>
+    <ul class="navlist">
+      <li class="active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/><path d="M9 21v-8h6v8"/></svg>
+        Dashboard
+      </li>
+      <li>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Attendance
+      </li>
+      <li>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Assignment
+      </li>
+      <li>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+        LMS
+      </li>
+      <li>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 13l2 2 4-4"/></svg>
+        Progress Card
+      </li>
+      <li>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+        Performance
+      </li>
+      <li>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.7-2.7 2.6-2.6z"/></svg>
+        Tools
+      </li>
+      <li>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l18-6v14L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+        School Updates
+      </li>
+    </ul>
+    <div class="sidebar-foot">
+      <div class="avatar" id="sidebar-avatar">--</div>
+      <div class="who">
+        <div class="name" id="sidebar-name">Loading...</div>
+        <div class="role" id="sidebar-grade">Loading profile...</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="mobile-nav">
+    <div class="brand">
+      <div class="brand-mark">D</div>
+      <div class="brand-text"><div class="school">Dunes International</div></div>
+    </div>
+    <div class="avatar" id="mobile-avatar" style="margin:0;">--</div>
+  </div>
+
+  <main>
+    <div class="student-info">
+      <div class="student-avatar" id="student-avatar">--</div>
+      <div class="student-details">
+        <h3 id="student-name">Loading...</h3>
+        <p id="student-grade">Loading profile...</p>
+      </div>
+      <a href="/logout" class="logout-btn">Sign Out</a>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2 id="circulars-title">Circulars</h2>
+          <div class="panel-sub" id="circulars-subtitle">Loading from portal...</div>
+        </div>
+        <a class="link-btn" href="/EasyConnectWeb/form/jsp_widget/jsp_circular.jsp?selPrivilegeId=privilege_2177" style="text-decoration:none;">Open live portal &rarr;</a>
+      </div>
+      <div id="circulars-panel">
+        <!-- Data will be injected here -->
+      </div>
+    </div>
+
+    <script>
+      // Fetch profile
+      fetch('/profile')
+        .then(r => r.json())
+        .then(res => {
+          if (res.name) {
+            const initials = res.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+            document.getElementById('student-name').textContent = res.name;
+            document.getElementById('student-avatar').textContent = initials;
+            document.getElementById('sidebar-name').textContent = res.name;
+            document.getElementById('sidebar-avatar').textContent = initials;
+            document.getElementById('mobile-avatar').textContent = initials;
+            document.getElementById('student-grade').textContent = (res.grade || 'Grade') + (res.section ? ' · ' + res.section : '');
+            document.getElementById('sidebar-grade').textContent = (res.grade || 'Grade') + (res.section ? ' · ' + res.section : '');
+          }
+        })
+        .catch(() => {});
+
+      // Fetch circulars
+      fetch('/circulars')
+        .then(r => r.json())
+        .then(res => {
+          const panel = document.getElementById('circulars-panel');
+          const subtitle = document.getElementById('circulars-subtitle');
+          if (res.error) {
+            if (res.error === 'SESSION_EXPIRED') {
+              subtitle.innerHTML = 'Session expired. <a href="/logout" style="color:var(--ochre);">Sign in again</a>';
+            } else {
+              subtitle.innerText = 'Error: ' + res.error;
+            }
+            return;
+          }
+          const data = res.data;
+          subtitle.innerText = data.length + ' active notices';
+          panel.innerHTML = data.map(item => {
+            const files = (item.file_path || '').split(',').filter(f => f && f.trim());
+            const fileLinks = files.length
+              ? `<div class="c-files">${files.map(f => {
+                  const name = (f.split('/').pop() || 'Attachment');
+                  return `<a class="c-file" href="/container${f.trim()}" target="_blank" rel="noopener">
+                            <span class="f-ic">${/\.pdf$/i.test(f) ? '📄' : '📎'}</span>
+                            <span>${name}</span>
+                          </a>`;
+                }).join('')}</div>`
+              : '';
+            return `
+              <div class="circ-card">
+                <div class="c-head">
+                  <div>
+                    <span class="a-tag">${item.publish_date || ''}</span>
+                    <div class="c-title">${item.title || ''}</div>
+                    <div class="c-meta">${item.headline || ''}</div>
+                  </div>
+                  <span class="c-caret">▾</span>
+                </div>
+                <div class="c-body">
+                  <div class="c-details">${item.details || '<p>No details provided.</p>'}</div>
+                  ${fileLinks}
+                </div>
+              </div>`;
+          }).join('');
+          panel.querySelectorAll('.circ-card').forEach(card => {
+            card.addEventListener('click', e => {
+              if (e.target.closest('a')) return;
+              card.classList.toggle('open');
+              const caret = card.querySelector('.c-caret');
+              if (caret) caret.textContent = card.classList.contains('open') ? '▴' : '▾';
+            });
+          });
+        })
+        .catch(err => {
+          document.getElementById('circulars-subtitle').innerText = 'Connection error';
+        });
+    </script>
+
+    <div class="portal-foot">
+      <div class="school-line">Dunes International School</div>
+      <div>P.O. Box 5121, Plot 19, Sector 9, Mussafah, Abu Dhabi, U.A.E</div>
+      <div>+971-2-5527527 · info@dunesinternationalschool.com</div>
+    </div>
+  </main>
+</div>
+
+<nav class="bottom-dock">
+  <div class="bottom-dock-inner">
+    <div class="bd-item active">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="bd-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>Grades</span>
+    </div>
+    <div class="bd-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+      <span>Timetable</span>
+    </div>
+    <div class="bd-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>Attend.</span>
+    </div>
+    <div class="bd-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      <span>Tasks</span>
+    </div>
+    <div class="bd-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4-1L3 20l1-4.5A8.38 8.38 0 0 1 3.5 11 8.5 8.5 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>
+      <span>News</span>
+    </div>
+  </div>
+</nav>
+
+</body>
+</html>

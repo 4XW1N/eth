@@ -1,0 +1,14 @@
+{
+  "name": "dunes-student-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Student portal proxy + dashboard for Dunes International School",
+  "main": "serve.js",
+  "scripts": {
+    "start": "node serve.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}

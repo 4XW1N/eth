@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: dunes-student-portal
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node serve.js
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PORTAL_KEY
+        sync: false
+      - key: DATA_DIR
+        value: /tmp/data
+    healthCheckPath: /login
+    autoDeploy: true

@@ -1,0 +1,16 @@
+# local data / sessions
+server/data/
+*.json.bak
+
+# node
+node_modules/
+npm-debug.log*
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# environment / secrets (never commit)
+*.env
+.env.local
