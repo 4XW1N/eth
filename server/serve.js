@@ -567,7 +567,8 @@ http.createServer(function (req, res) {
     }
   }
 
-  if (ACCESS && !allowAccess(req)) {
+  var isPublic = url === '/login' || url === '/' || /\.(html|css|js|ico|png|jpg|svg)$/.test(url);
+  if (ACCESS && !isPublic && !allowAccess(req)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
     res.end('Forbidden');
     return;
