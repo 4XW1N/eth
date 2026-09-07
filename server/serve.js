@@ -560,18 +560,11 @@ http.createServer(function (req, res) {
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '0.0.0.0';
 
   if (/^\/api\//.test(url) || url === '/DUNES/authenticate.do' || url === '/circulars' || url === '/profile' || url === '/logout') {
-    if (checkRate(ip, 'api', 120, 60000)) {
+    if (checkRate(ip, 'api', 30, 60000)) {
       res.writeHead(429, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Too many requests' }));
       return;
     }
-  }
-
-  var isPublic = url === '/login' || url === '/' || /\.(html|css|js|ico|png|jpg|svg)$/.test(url);
-  if (ACCESS && !isPublic && !allowAccess(req)) {
-    res.writeHead(403, { 'Content-Type': 'text/plain' });
-    res.end('Forbidden');
-    return;
   }
 
   if (url === '/login') {
