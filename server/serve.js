@@ -208,6 +208,7 @@ async function fetchProfile(jar) {
 
 async function loginToPortal(loginid, password) {
   let jar = [];
+  let parentLoginId = '';
   const collectCookies = function (headers) {
     let all = [];
     try { all = headers.getSetCookie(); } catch (e) {}
@@ -321,6 +322,7 @@ async function loginToPortal(loginid, password) {
         let authResp;
         try { authResp = await au.json(); } catch (e) { return { ok: false, why: 'authenicate-parse' }; }
         if (!authResp || !authResp.token) return { ok: false, why: 'authenicate-fail', auth: authResp };
+        parentLoginId = authResp.loginId || '';
 
         const gp = await fetch(BASE + '/EasyConnectAPI/service/API/getPrivileges', {
           method: 'POST', redirect: 'follow',
@@ -378,7 +380,8 @@ async function loginToPortal(loginid, password) {
   return {
     ok: ok,
     jar: jar,
-    jarArr: jar.map(o => ({ name: o.name, value: o.value, path: o.path }))
+    jarArr: jar.map(o => ({ name: o.name, value: o.value, path: o.path })),
+    loginId: parentLoginId
   };
 }
 
@@ -485,7 +488,7 @@ http.createServer(function (req, res) {
       loginToPortal(l, p).then(function (result) {
         if (result.ok) {
           const sid = makeSid();
-          sessions.set(sid, { jar: result.jarArr, ts: Date.now() });
+          sessions.set(sid, { jar: result.jarArr, loginId: result.loginId || '', username: l, ts: Date.now() });
           setSidCookie(res, sid);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true, name: l }));
@@ -512,6 +515,26 @@ http.createServer(function (req, res) {
 
   const sid = getSid(req);
   const sess = getSession(sid);
+
+  if (url === '/whoami') {
+    if (!sess) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'SESSION_EXPIRED' }));
+      return;
+    }
+    fetchProfile(sess.jar)
+      .then(function (prof) {
+        const body = { loginId: sess.loginId || '', username: sess.username || '' };
+        if (prof && prof.studentId) body.studentId = prof.studentId;
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify(body));
+      })
+      .catch(function () {
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ loginId: sess.loginId || '', username: sess.username || '' }));
+      });
+    return;
+  }
 
   if (url === '/circulars') {
     if (!sess) {
