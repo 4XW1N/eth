@@ -365,7 +365,7 @@
       fetch('/whoami')
         .then(r => r.json())
         .then(res => {
-          const id = res.loginId || res.studentId || res.username || '';
+          const id = res.studentId || res.loginId || res.username || '';
           const lmsEl = document.getElementById('lms-link');
           if (lmsEl) {
             if (id) {
