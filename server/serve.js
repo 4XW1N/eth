@@ -565,7 +565,7 @@ http.createServer(function (req, res) {
     return;
   }
 
-  const PORTAL_PREFIXES = ['/EasyConnectWeb', '/EasyConnectAPI', '/DCNWeb', '/DCWeb', '/container', '/EasyConnectQS', '/assets', '/school_data', '/DUNES'];
+  const PORTAL_PREFIXES = ['/EasyConnectWeb', '/EasyConnectAPI', '/DCNWeb', '/DCWeb', '/container', '/EasyConnectQS', '/assets', '/school_data', '/DUNES', '/moodle'];
   if (PORTAL_PREFIXES.some(function (p) { return url.indexOf(p) === 0; })) {
     proxyToPortal(req, res, sess ? sess.jar : null);
     return;
