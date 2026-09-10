@@ -232,12 +232,19 @@ async function loginToPortal(loginid, password) {
   };
 
   let url = BASE + '/';
+  let loginHtml = '';
+  let csrfToken = '';
   for (let i = 0; i < 8; i++) {
     const r = await fetch(url, { redirect: 'manual', headers: { 'User-Agent': UA, 'Cookie': jarFor(new URL(url).pathname) } });
     collectCookies(r.headers);
     const loc = r.headers.get('location');
     if (loc) { url = new URL(loc, url).toString(); }
-    else { await r.text(); break; }
+    else {
+      loginHtml = await r.text();
+      const csrfM = loginHtml.match(/name="_csrf" value="([^"]+)"/);
+      if (csrfM) csrfToken = csrfM[1];
+      break;
+    }
   }
 
   async function tryPost(endpoint) {
@@ -247,6 +254,7 @@ async function loginToPortal(loginid, password) {
     fd.append('dbConnVar', 'DUNES');
     fd.append('hiddenfield', '');
     fd.append('service_id', '');
+    if (csrfToken) fd.append('_csrf', csrfToken);
 
     const r2 = await fetch(BASE + endpoint, {
       method: 'POST',
