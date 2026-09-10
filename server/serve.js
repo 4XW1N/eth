@@ -381,7 +381,12 @@ async function loginToPortal(loginid, password) {
     ok: ok,
     jar: jar,
     jarArr: jar.map(o => ({ name: o.name, value: o.value, path: o.path })),
-    loginId: parentLoginId
+    loginId: parentLoginId,
+    debug: {
+      authStatus: a.status, authLoc: a.locNorm, likelyOk: likelyOk, hasEcSession: hasEcSession,
+      sessCount: jar.filter(o => o.name === 'JSESSIONID').length,
+      ecSess: jar.filter(o => o.name === 'JSESSIONID').map(o => o.path).join(',')
+    }
   };
 }
 
@@ -493,8 +498,16 @@ http.createServer(function (req, res) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true, name: l }));
         } else {
+          const dbg = result.debug || {};
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ ok: false, error: 'Invalid username or password' }));
+          res.end(JSON.stringify({
+            ok: false,
+            error: 'Invalid username or password',
+            debug: {
+              authStatus: dbg.authStatus, authLoc: dbg.authLoc, likelyOk: dbg.likelyOk,
+              hasEcSession: dbg.hasEcSession, sessCount: dbg.sessCount, ecSess: dbg.ecSess
+            }
+          }));
         }
       }).catch(function (e) {
         res.writeHead(502, { 'Content-Type': 'application/json' });
