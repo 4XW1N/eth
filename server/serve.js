@@ -154,6 +154,17 @@ async function fetchCirculars(jar) {
   const ecToken = (pageHtml.match(/var ecToken = '([^']+)'/) || [])[1] || '';
   let studentId = (pageHtml.match(/studentIdStr":"(\d+)"/) || [])[1] || '';
   console.log('[circulars] page len=' + pageHtml.length + ' csrf=' + (csrf ? 'yes' : 'NO') + ' ecToken=' + (ecToken ? 'yes' : 'NO') + ' studentId=' + (studentId || 'NO'));
+  try {
+    const snip = (needle) => {
+      const i = pageHtml.indexOf(needle);
+      if (i < 0) return 'NOT FOUND';
+      return pageHtml.slice(i, i + 140).replace(/\s+/g, ' ');
+    };
+    console.log('[circulars] ecToken spot: ' + snip('ecToken'));
+    console.log('[circulars] studentId spot: ' + snip('studentId'));
+    console.log('[circulars] meta csrf spot: ' + snip('"_csrf"'));
+    console.log('[circulars] bearer spot: ' + snip('Bearer'));
+  } catch (e) {}
 
   const payload = new URLSearchParams({
     schoolCode: 'DUNES',
