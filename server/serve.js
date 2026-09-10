@@ -146,12 +146,14 @@ async function fetchCirculars(jar) {
   const pageHtml = await pageRes.text();
 
   if (/SessionExpired|timeout\.jsp/i.test(pageRes.url) || /SessionExpired/i.test(pageHtml)) {
+    console.log('[circulars] page returned session expired url=' + pageRes.url + ' len=' + pageHtml.length);
     return { error: 'SESSION_EXPIRED' };
   }
 
   const csrf = (pageHtml.match(/<meta name="_csrf" content="([^"]+)"/) || [])[1] || '';
   const ecToken = (pageHtml.match(/var ecToken = '([^']+)'/) || [])[1] || '';
   let studentId = (pageHtml.match(/studentIdStr":"(\d+)"/) || [])[1] || '';
+  console.log('[circulars] page len=' + pageHtml.length + ' csrf=' + (csrf ? 'yes' : 'NO') + ' ecToken=' + (ecToken ? 'yes' : 'NO') + ' studentId=' + (studentId || 'NO'));
 
   const payload = new URLSearchParams({
     schoolCode: 'DUNES',
@@ -173,6 +175,7 @@ async function fetchCirculars(jar) {
     redirect: 'follow'
   }, 3);
   const enc = await apiRes.text();
+  console.log('[circulars] api status=' + apiRes.status + ' respLen=' + enc.length + ' head=' + enc.slice(0, 60).replace(/\s+/g, ' '));
   if (!enc || enc.length < 40) return { error: 'Empty API response' };
   if (/<!DOCTYPE|<html|SessionExpired/i.test(enc)) return { error: 'SESSION_EXPIRED' };
 
