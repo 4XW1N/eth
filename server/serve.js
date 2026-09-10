@@ -154,16 +154,24 @@ async function fetchCirculars(jar) {
   const ecToken = (pageHtml.match(/var ecToken = '([^']+)'/) || [])[1] || '';
   let studentId = (pageHtml.match(/studentIdStr":"(\d+)"/) || [])[1] || '';
   console.log('[circulars] page len=' + pageHtml.length + ' csrf=' + (csrf ? 'yes' : 'NO') + ' ecToken=' + (ecToken ? 'yes' : 'NO') + ' studentId=' + (studentId || 'NO'));
-  try {
-    const snip = (needle) => {
+try {
+    const win = (needle, w) => {
       const i = pageHtml.indexOf(needle);
       if (i < 0) return 'NOT FOUND';
-      return pageHtml.slice(i, i + 140).replace(/\s+/g, ' ');
+      w = w || 320;
+      const s = Math.max(0, i - 60);
+      return pageHtml.slice(s, i + w).replace(/\s+/g, ' ');
     };
-    console.log('[circulars] ecToken spot: ' + snip('ecToken'));
-    console.log('[circulars] studentId spot: ' + snip('studentId'));
-    console.log('[circulars] meta csrf spot: ' + snip('"_csrf"'));
-    console.log('[circulars] bearer spot: ' + snip('Bearer'));
+    for (const k of ['getCircularsList', 'studentIdStr', 'ecAuthToken', 'ec_param', 'authtoken', 'AUTH_TOKEN', 'sessionStorage', 'localStorage']) {
+      console.log('[circulars] window<' + k + '>: ' + win(k));
+    }
+  } catch (e) {}
+  try {
+    console.log('[circulars] PAGE-----BEGIN');
+    for (let i = 0; i < pageHtml.length; i += 6500) {
+      console.log('[circulars] P>' + pageHtml.slice(i, i + 6500).replace(/\s+/g, ' '));
+    }
+    console.log('[circulars] PAGE-----END');
   } catch (e) {}
 
   const payload = new URLSearchParams({
